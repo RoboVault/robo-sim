@@ -26,7 +26,10 @@ def makeTrade(amount, vol1, vol2, fees = 0.003) :
     
     return vol1_new, vol2_new
 
-        
+def getLpValue(vol1,ownership) : 
+    value = 2*vol1*ownership
+    return(value)
+       
     
 def createVault(amount, lendAllocation, vaultToken, secondaryToken, vol1, vol2) : 
     collateral = lendAllocation * amount
@@ -164,7 +167,7 @@ def simulate(allTrades, vaultInitial, lp, vaultToken, secondaryToken, vol1, vol2
         debtRatioLog.append(debtRatio)
         collatRatioLog.append(collatRatio)
         
-    return vaultLog, priceLog, debtRatioLog, collatRatioLog
+    return vaultLog, priceLog, debtRatioLog, collatRatioLog, vol1, vol2
         
  
 
