@@ -169,7 +169,74 @@ def simulate(allTrades, vaultInitial, lp, vaultToken, secondaryToken, vol1, vol2
         
     return vaultLog, priceLog, debtRatioLog, collatRatioLog, vol1, vol2
         
- 
+
+    
+def simulateMarket(priceInput, vaultInitial, lp, vaultToken, secondaryToken, vol1, vol2, adjRates, 
+             collatLow = .5, collatTarget = .55, collatHigh = .6, 
+             debtLow = .97, debtHigh = 1.03, rebalance = True, harvestFrequency = 5, ammFee = 0.003) : 
+    
+    vault = vaultInitial
+    priceLog = []
+    vaultLog = []
+    debtRatioLog = []
+    collatRatioLog = []
+    
+    
+    prices = getPrices(vaultToken, secondaryToken, vol1, vol2)
+    debtRatio = calcDebtRatio(vault, vaultToken, secondaryToken, vol1, vol2)
+    collatRatio = calcCollatRatio(vault, vaultToken, secondaryToken, vol1, vol2)   
+    vaultValue = getVaultValue(vault, vaultToken, secondaryToken, vol1, vol2)
+    vaultLog.append(vaultValue)
+    p0 = prices[secondaryToken]
+    priceLog.append(1.)
+        
+    debtRatioLog.append(debtRatio)
+    collatRatioLog.append(collatRatio)
+    
+    harvestCount = 0
+    
+    nSteps = len(priceInput)
+    for i in range(nSteps) : 
+
+        startingPrice = vol1 / vol2 
+        # k = y * k 
+        K = vol1 * vol2 
+        # K = price * vol2 * vol2 
+        # price = K / (vol2^2) 
+        # vol2 = sqrt(K / price)
+        
+        
+        newPrice = priceInput[i]
+        
+        vol2 = (K / newPrice) ** (0.5)
+        vol1 = K / vol2        
+        
+        
+        adjVault(vault, adjRates, vol1)
+        if rebalance == True : 
+            rebalanceDebt(vault, vaultToken, secondaryToken, vol1, vol2, debtLow, debtHigh)
+            rebalanceCollat(vault, vaultToken, secondaryToken, vol1, vol2, collatLow, collatTarget ,collatHigh)
+        
+        
+        prices = getPrices(vaultToken, secondaryToken, vol1, vol2)
+        debtRatio = calcDebtRatio(vault, vaultToken, secondaryToken, vol1, vol2)
+        collatRatio = calcCollatRatio(vault, vaultToken, secondaryToken, vol1, vol2) 
+        harvestCount += 1
+        if harvestCount == harvestFrequency : 
+            harvestCount = 0 
+            harvest(vault, debtRatio, prices, vaultToken)
+        
+        vaultValue = getVaultValue(vault, vaultToken, secondaryToken, vol1, vol2)
+        vaultLog.append(vaultValue)
+        priceLog.append(prices[secondaryToken] / p0)
+
+    
+        
+        debtRatioLog.append(debtRatio)
+        collatRatioLog.append(collatRatio)
+        
+    return vaultLog, priceLog, debtRatioLog, collatRatioLog, vol1, vol2
+    
 
 #vault = createVault(vaultTVL, lendAllocation, vaultToken, secondaryToken, vol1, vol2)
 
