@@ -1,8 +1,8 @@
 # robo-sim
 
-This is a working doc to test various scenarious and the impact of extreme price movements + various paramaters on strategy
+This is a working doc to test various scenarios and the impact of extreme price movements + various paramaters on strategy
 
-model.py contains underlying logic for simulation including while simulation.iypnb can be used to simulate various scenarious such as
+model.py contains underlying logic for simulation including while simulation.iypnb can be used to simulate various scenarios such as
 1) simulating AMM price movements for given randomly generated trades with varying degrees of volatility 
 2) tracking performance of LP vs holding for extreme price movements
 3) tracking vault performance using robovault strategy with given return paramaters
@@ -12,7 +12,7 @@ model.py contains underlying logic for simulation including while simulation.iyp
 
 to illustrate upside / risk of various strategies + mechanics of robo vault stragey some examples have been included in the jupyter notebook. 
 
-Feel free to adjust anything and test various scenarious! 
+Feel free to adjust anything and test various scenarios! 
 
 Some future changes to include 
 1) varying slippage on rebalancing based on AMM + showing it's impact
